@@ -1,0 +1,176 @@
+---
+import githubIconRaw from "../assets/github-icon.svg?raw";
+import xIconRaw from "../assets/x-icon.svg?raw";
+import rssIconRaw from "../assets/rss-icon.svg?raw";
+import type { SocialLink } from "../types";
+
+type Props = {
+  user: string;
+  handle: string;
+  role: string;
+  bio: string;
+  links: SocialLink[];
+};
+
+const { user, handle, role, bio, links } = Astro.props;
+
+const iconMap: Record<string, string> = {
+  GitHub: githubIconRaw,
+  X: xIconRaw,
+  RSS: rssIconRaw,
+};
+---
+
+<section>
+  <div class="card-shell">
+    <div class="ring-glow"></div>
+    <div class="inner-card">
+      <div class="content-row">
+        <img src="/images/morit958.webp" alt={user} class="avatar" />
+        <div class="content-body">
+          <h1 class="user-name">
+            {user}<span class="handle">{handle}</span>
+          </h1>
+          <div class="role">{role}</div>
+          <p class="bio">{bio}</p>
+          <div class="link-list">
+            {
+              links.map((link) => (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="pill-link"
+                >
+                  {iconMap[link.label] && (
+                    <span set:html={iconMap[link.label]} />
+                  )}
+                  <span>{link.url}</span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .card-shell {
+    position: relative;
+    z-index: 1;
+    border-radius: 18px;
+    padding: 1px;
+    overflow: hidden;
+    background: var(--hero-shell-bg);
+  }
+
+  .ring-glow {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: var(--hero-ring-gradient);
+    animation: border-spin 12s linear infinite;
+  }
+
+  .inner-card {
+    position: relative;
+    border-radius: 16px;
+    padding: 24px 28px;
+    background: var(--hero-inner-bg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .content-row {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 88px;
+    flex: 0 0 auto;
+    object-fit: cover;
+  }
+
+  .content-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .user-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+  }
+
+  .handle {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 14px;
+    margin-left: 8px;
+  }
+
+  .role {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .bio {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .link-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .pill-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--hero-pill-border);
+    background: var(--hero-pill-bg);
+    color: var(--text);
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  .pill-link:hover {
+    border-color: var(--border-strong);
+    color: var(--fg);
+  }
+
+  @media (max-width: 640px) {
+    .content-row {
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .content-body {
+      text-align: center;
+      width: 100%;
+    }
+
+    .link-list {
+      justify-content: center;
+    }
+  }
+</style>

@@ -1,11 +1,82 @@
 ---
-import Hello from "../components/Hello.astro";
 import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import HeroCard from "../components/HeroCard.astro";
+import RecentActivities from "../components/RecentActivities.astro";
+import Footer from "../components/Footer.astro";
 
-const pageTitle = "morit958";
-const pageDescription = "鹿児島の大学院生 morit958 森田のウェブサイト。";
+const profile = {
+  user: "Morita Kohei",
+  handle: "moriT958",
+  role: "Student SWE · 鹿児島",
+  bio: "鹿児島大学の M2 大学院生です。Web 技術に興味があります。好きな言語は Go です。",
+  links: [
+    {
+      label: "GitHub",
+      url: "github.com/moriT958",
+      href: "https://github.com/moriT958",
+    },
+    { label: "X", url: "@morita_kagshm", href: "https://x.com/morita_kagshm" },
+    { label: "RSS", url: "/rss.xml", href: "/rss.xml" },
+  ],
+};
+
+const allActivities = [
+  {
+    date: "2026-05-20",
+    title: "Neovim を lazy.nvim 構成へ移行した話",
+    href: "/posts/nvim-lazy-migration",
+  },
+  {
+    date: "2026-05-11",
+    title: "Tailwind v4 で oklch を使い倒す",
+    href: "/posts/tailwind-v4-oklch",
+  },
+  {
+    date: "2026-05-02",
+    title: "Bun の Workspace で Monorepo を組む",
+    href: "/posts/bun-workspaces",
+  },
+];
+
+const oneMonthAgo = new Date();
+oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+const activities = allActivities.filter((a) => new Date(a.date) >= oneMonthAgo);
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
-  <Hello />
+<Layout
+  title="morita's website"
+  description="morit958 のウェブサイト。鹿児島の大学院生。Web や技術に関することを書きます。"
+>
+  <main class="page">
+    <Header activePage="home" />
+    <div class="content-wrap">
+      <HeroCard {...profile} />
+      <RecentActivities items={activities} visibleNum={4} />
+    </div>
+    <Footer />
+  </main>
 </Layout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .content-wrap {
+    padding: 36px 36px 48px;
+    max-width: 820px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .content-wrap {
+      padding: 24px 16px 40px;
+    }
+  }
+</style>
