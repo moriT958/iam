@@ -1,0 +1,226 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const allPosts = await getCollection("posts");
+const sorted = allPosts.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+type PostEntry = (typeof sorted)[number];
+
+type YearGroup = {
+  year: string;
+  posts: PostEntry[];
+};
+
+const byYear = sorted.reduce<Record<string, PostEntry[]>>((acc, p) => {
+  const y = p.data.date.toISOString().slice(0, 4);
+  if (!acc[y]) acc[y] = [];
+  acc[y]!.push(p);
+  return acc;
+}, {});
+
+const yearGroups: YearGroup[] = Object.keys(byYear)
+  .sort((a, b) => Number(b) - Number(a))
+  .map((year) => ({ year, posts: byYear[year]! }));
+---
+
+<Layout
+  title="Archives | morita's website"
+  description="morit958 のブログ記事アーカイブ。"
+>
+  <main class="page">
+    <Header activePage="archives" />
+    <div class="content-wrap">
+      <div class="archives-heading">
+        <div class="cmd-line">
+          <span class="accent">$</span>
+          <span class="typed">ls archives/</span>
+          <span class="caret"></span>
+        </div>
+        <div class="subtitle">{sorted.length} posts</div>
+      </div>
+
+      <div class="list">
+        {
+          yearGroups.map(({ year, posts }) => (
+            <div class="year-group">
+              <div class="year-label">{year}</div>
+              {posts.map((post, i) => {
+                const dateStr = post.data.date.toISOString().slice(0, 10);
+                const monthDay = dateStr.slice(5);
+                const href = post.data.url ?? `/posts/${post.id}`;
+                const isExternal = !!post.data.url;
+                return (
+                  <a
+                    href={href}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    class={i === 0 ? "row row-first" : "row"}
+                  >
+                    <span class="date">{monthDay}</span>
+                    <span class="title">
+                      {post.data.title}
+                      {isExternal && <span class="external-mark">↗</span>}
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <Footer />
+  </main>
+</Layout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .content-wrap {
+    padding: 32px 36px 48px;
+    max-width: 820px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* --- ArchivesHeading --- */
+  .archives-heading {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 4px;
+  }
+
+  .cmd-line {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.3px;
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+
+  .typed {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    animation: typing-archives 0.5s steps(12) forwards;
+  }
+
+  @keyframes typing-archives {
+    from {
+      width: 0ch;
+    }
+    to {
+      width: 12ch;
+    }
+  }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    vertical-align: -0.12em;
+    background: var(--fg);
+    margin-left: 1px;
+    animation:
+      blink 1.05s steps(1) infinite,
+      caret-hide-archives 0s 0.5s forwards;
+  }
+
+  @keyframes caret-hide-archives {
+    to {
+      opacity: 0;
+      width: 0;
+      margin: 0;
+    }
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    opacity: 0;
+    animation: subtitle-fade-in-archives 0.3s ease 0.5s forwards;
+  }
+
+  @keyframes subtitle-fade-in-archives {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* --- Archive list --- */
+  .list {
+    margin-top: 4px;
+  }
+
+  .year-group {
+    margin-top: 24px;
+  }
+
+  .year-label {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    gap: 14px;
+    padding: 8px 6px;
+    text-decoration: none;
+    color: var(--fg);
+    border-radius: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  .row-first {
+    border-top: none;
+  }
+
+  .row:hover {
+    background: var(--hover-bg);
+  }
+
+  .date {
+    color: var(--muted);
+    font-size: 12px;
+    padding-top: 1px;
+  }
+
+  .title {
+    font-size: 14px;
+    color: var(--fg);
+  }
+
+  .external-mark {
+    color: var(--muted);
+    margin-left: 5px;
+    font-size: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .content-wrap {
+      padding: 20px 16px 40px;
+    }
+  }
+</style>
