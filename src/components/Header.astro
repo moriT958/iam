@@ -1,6 +1,8 @@
 ---
 import moonIconRaw from "../assets/moon-icon.svg?raw";
 import sunIconRaw from "../assets/sun-icon.svg?raw";
+import menuIconRaw from "../assets/menu-icon.svg?raw";
+import closeIconRaw from "../assets/close-icon.svg?raw";
 
 type Props = {
   activePage: "home" | "posts" | "archives";
@@ -25,26 +27,55 @@ const { activePage } = Astro.props;
     <a
       href="/archives"
       class={activePage === "archives" ? "nav-link active" : "nav-link"}
+      >Archives</a
     >
-      Archives
-    </a>
   </nav>
   <div class="spacer"></div>
   <button type="button" id="theme-toggle" aria-label="Switch theme">
     <span class="moon-icon" set:html={moonIconRaw} />
     <span class="sun-icon" set:html={sunIconRaw} />
   </button>
+  <div class="mobile-nav-wrap">
+    <button type="button" id="mobile-menu-btn" aria-label="Open menu">
+      <span class="menu-icon" set:html={menuIconRaw} />
+      <span class="close-icon" set:html={closeIconRaw} />
+    </button>
+    <div id="mobile-dropdown">
+      <a
+        href="/"
+        class={activePage === "home" ? "mobile-link active" : "mobile-link"}
+        >Home</a
+      >
+      <a
+        href="/posts"
+        class={activePage === "posts" ? "mobile-link active" : "mobile-link"}
+        >Posts</a
+      >
+      <a
+        href="/archives"
+        class={activePage === "archives" ? "mobile-link active" : "mobile-link"}
+        >Archives</a
+      >
+    </div>
+  </div>
 </header>
 
 <script>
-  const btn = document.getElementById("theme-toggle")!;
+  const themeBtn = document.getElementById("theme-toggle")!;
   const COOKIE = "var-card-theme";
 
-  btn.addEventListener("click", () => {
+  themeBtn.addEventListener("click", () => {
     const current = document.documentElement.dataset.theme ?? "light";
     const next = current === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
     document.cookie = `${COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
+  });
+
+  const menuBtn = document.getElementById("mobile-menu-btn")!;
+  menuBtn.addEventListener("click", () => {
+    const open = menuBtn.getAttribute("aria-expanded") === "true";
+    menuBtn.setAttribute("aria-expanded", String(!open));
+    menuBtn.setAttribute("aria-label", open ? "Open menu" : "Close menu");
   });
 </script>
 
@@ -90,6 +121,7 @@ const { activePage } = Astro.props;
     padding: 6px 4px;
     text-decoration: none;
     border-bottom: 2px solid transparent;
+    transition: color 0.15s;
   }
 
   .nav-link:hover {
@@ -139,14 +171,90 @@ const { activePage } = Astro.props;
     display: inline-flex;
   }
 
+  /* mobile nav */
+  .mobile-nav-wrap {
+    display: none;
+  }
+
+  #mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    width: 34px;
+    height: 30px;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+    flex-shrink: 0;
+  }
+
+  #mobile-menu-btn:hover {
+    color: var(--fg);
+    border-color: var(--border-strong);
+  }
+
+  .close-icon {
+    display: none;
+  }
+
+  #mobile-menu-btn[aria-expanded="true"] .menu-icon {
+    display: none;
+  }
+
+  #mobile-menu-btn[aria-expanded="true"] .close-icon {
+    display: inline-flex;
+  }
+
+  #mobile-dropdown {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    padding-bottom: 4px;
+    gap: 2px;
+  }
+
+  #mobile-menu-btn[aria-expanded="true"] ~ #mobile-dropdown {
+    display: flex;
+  }
+
+  .mobile-link {
+    color: var(--muted);
+    font-size: 14px;
+    padding: 10px 4px;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .mobile-link:hover {
+    color: var(--fg);
+  }
+
+  .mobile-link.active {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
   @media (max-width: 640px) {
     header {
       padding: 12px 16px;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     nav {
       display: none;
+    }
+
+    .mobile-nav-wrap {
+      display: contents;
     }
   }
 </style>

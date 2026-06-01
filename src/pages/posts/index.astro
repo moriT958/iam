@@ -1,0 +1,238 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const allPosts = await getCollection("posts");
+const sorted = allPosts.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const count = sorted.length;
+---
+
+<Layout
+  title="Posts | morita's website"
+  description="moriT958 の技術ブログ記事一覧"
+>
+  <main class="page">
+    <Header activePage="posts" />
+    <div class="content-wrap">
+      <div class="posts-heading">
+        <div class="cmd-line">
+          <span class="accent">$</span>
+          <span class="typed">ls posts/</span>
+          <span class="caret"></span>
+        </div>
+        <div class="subtitle">{count} entries · 最新から</div>
+      </div>
+
+      <div class="list">
+        {
+          sorted.map((post) => (
+            <div class="post-item">
+              {post.data.url ? (
+                <a
+                  href={post.data.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="card-overlay"
+                />
+              ) : (
+                <a href={`/posts/${post.id}`} class="card-overlay" />
+              )}
+              <div class="post-meta">
+                <span>{post.data.date.toISOString().slice(0, 10)}</span>
+              </div>
+              <h3 class="post-title">
+                {post.data.title}
+                {post.data.url && <span class="external-mark">↗</span>}
+              </h3>
+              {post.data.description && (
+                <p class="post-excerpt">{post.data.description}</p>
+              )}
+              {post.data.tags && post.data.tags.length > 0 && (
+                <div class="tag-row">
+                  {post.data.tags.map((tag) => (
+                    <a href={`/tags/${tag}`} class="tag">
+                      <span class="tag-hash">#</span>
+                      {tag}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <Footer />
+  </main>
+</Layout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .content-wrap {
+    padding: 32px 36px 48px;
+    max-width: 820px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* --- PostsHeading --- */
+  .posts-heading {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 4px;
+  }
+
+  .cmd-line {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.3px;
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+
+  .typed {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    animation: typing-posts 0.38s steps(9) forwards;
+  }
+
+  @keyframes typing-posts {
+    from {
+      width: 0ch;
+    }
+    to {
+      width: 9ch;
+    }
+  }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    vertical-align: -0.12em;
+    background: var(--fg);
+    margin-left: 1px;
+    animation:
+      blink 1.05s steps(1) infinite,
+      caret-hide-posts 0s 0.38s forwards;
+  }
+
+  @keyframes caret-hide-posts {
+    to {
+      opacity: 0;
+      width: 0;
+      margin: 0;
+    }
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    opacity: 0;
+    animation: subtitle-fade-in-posts 0.3s ease 0.38s forwards;
+  }
+
+  @keyframes subtitle-fade-in-posts {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* --- Post list --- */
+  .list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-item {
+    position: relative;
+    padding: 18px 8px;
+    border-bottom: 1px solid var(--border);
+    border-radius: 6px;
+    transition: background 0.12s;
+  }
+
+  .post-item:hover {
+    background: var(--hover-bg);
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .post-title {
+    margin: 6px 0;
+    color: var(--fg);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+
+  .external-mark {
+    color: var(--muted);
+    margin-left: 5px;
+    font-size: 13px;
+  }
+
+  .post-excerpt {
+    margin: 0;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tag-row {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    position: relative;
+    color: var(--teal);
+    font-size: 12px;
+    border-bottom: 1px dashed var(--teal);
+    padding-bottom: 1px;
+    text-decoration: none;
+  }
+
+  .tag-hash {
+    opacity: 0.7;
+  }
+
+  @media (max-width: 640px) {
+    .content-wrap {
+      padding: 20px 16px 40px;
+    }
+  }
+</style>
