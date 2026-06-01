@@ -1,5 +1,9 @@
 ---
-import type { Activity } from "../types";
+type Activity = {
+  date: string;
+  title: string;
+  href: string;
+};
 
 type Props = {
   items: Activity[];

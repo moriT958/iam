@@ -3,6 +3,7 @@ import moonIconRaw from "../assets/moon-icon.svg?raw";
 import sunIconRaw from "../assets/sun-icon.svg?raw";
 import menuIconRaw from "../assets/menu-icon.svg?raw";
 import closeIconRaw from "../assets/close-icon.svg?raw";
+import SearchModal from "./SearchModal.astro";
 
 type Props = {
   activePage: "home" | "posts" | "archives";
@@ -31,6 +32,7 @@ const { activePage } = Astro.props;
     >
   </nav>
   <div class="spacer"></div>
+  <SearchModal />
   <button type="button" id="theme-toggle" aria-label="Switch theme">
     <span class="moon-icon" set:html={moonIconRaw} />
     <span class="sun-icon" set:html={sunIconRaw} />

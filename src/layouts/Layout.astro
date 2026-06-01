@@ -90,9 +90,9 @@ const THEME_BOOTSTRAP_SCRIPT = `(function(){var cookies=document.cookie.split(";
     --hero-ring-gradient: conic-gradient(
       from 0deg,
       transparent 30%,
-      #f2971899 48%,
+      color-mix(in srgb, var(--accent) 60%, transparent) 48%,
       #ffffff 50%,
-      #f2971899 52%,
+      color-mix(in srgb, var(--accent) 60%, transparent) 52%,
       transparent 70%
     );
     --hero-inner-bg: var(--bg);
@@ -127,9 +127,9 @@ const THEME_BOOTSTRAP_SCRIPT = `(function(){var cookies=document.cookie.split(";
     --hero-ring-gradient: conic-gradient(
       from 0deg,
       transparent 30%,
-      #e6b450cc 48%,
+      color-mix(in srgb, var(--accent) 80%, transparent) 48%,
       rgba(255, 255, 255, 0.33) 50%,
-      #e6b450cc 52%,
+      color-mix(in srgb, var(--accent) 80%, transparent) 52%,
       transparent 70%
     );
     --hero-inner-bg: var(--bg);
@@ -143,11 +143,8 @@ const THEME_BOOTSTRAP_SCRIPT = `(function(){var cookies=document.cookie.split(";
     margin: 0;
     padding: 0;
     font-family:
-      "JetBrains Mono",
-      system-ui,
-      -apple-system,
-      "Segoe UI",
-      sans-serif;
+      "JetBrains Mono", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+      "Yu Gothic", "Meiryo", system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;

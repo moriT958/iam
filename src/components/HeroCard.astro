@@ -2,7 +2,12 @@
 import githubIconRaw from "../assets/github-icon.svg?raw";
 import xIconRaw from "../assets/x-icon.svg?raw";
 import rssIconRaw from "../assets/rss-icon.svg?raw";
-import type { SocialLink } from "../types";
+
+type SocialLink = {
+  label: string;
+  url: string;
+  href: string;
+};
 
 type Props = {
   user: string;
