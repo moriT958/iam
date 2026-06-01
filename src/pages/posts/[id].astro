@@ -247,20 +247,53 @@ const { Content } = await render(post);
     padding: 1px 5px;
   }
 
+  .prose :global(.code-wrapper) {
+    position: relative;
+    margin-top: 18px;
+    max-width: 100%;
+  }
+
   .prose :global(pre) {
     background: var(--panel2);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 16px;
+    border-radius: 8px;
+    padding: 14px 18px;
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin-top: 18px;
+    margin: 0;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.65;
     white-space: pre;
     word-break: normal;
     overflow-wrap: normal;
+  }
+
+  .prose :global(.copy-btn) {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+      color 0.12s,
+      border-color 0.12s;
+  }
+
+  .prose :global(.copy-btn:hover) {
+    color: var(--fg);
+    border-color: var(--border-strong);
+  }
+
+  .prose :global(.copy-btn.copied) {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   .prose :global(pre code) {
@@ -407,3 +440,31 @@ const { Content } = await render(post);
     color: var(--teal);
   }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLPreElement>(".prose pre").forEach((pre) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "code-wrapper";
+    pre.parentNode!.insertBefore(wrapper, pre);
+    wrapper.appendChild(pre);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.textContent = "Copy";
+    wrapper.appendChild(btn);
+
+    btn.addEventListener("click", () => {
+      const code = pre.textContent ?? "";
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "Copy";
+          btn.classList.remove("copied");
+        }, 1500);
+      });
+    });
+  });
+</script>
