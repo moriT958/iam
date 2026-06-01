@@ -6,6 +6,7 @@ import Footer from "../../components/Footer.astro";
 import PostHeader from "../../components/PostHeader.astro";
 import Prose from "../../components/Prose.astro";
 import PostNav from "../../components/PostNav.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -20,7 +21,11 @@ export async function getStaticPaths() {
 }
 
 const { post, prevPost, nextPost } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tocItems = headings
+  .filter((h) => h.depth === 2 || h.depth === 3)
+  .map((h) => ({ id: h.slug, text: h.text, depth: h.depth }));
+const hasToc = tocItems.length > 0;
 ---
 
 <Layout
@@ -29,8 +34,8 @@ const { Content } = await render(post);
 >
   <main class="page">
     <Header activePage="posts" />
-    <div class="content">
-      <article class="article">
+    <div class={hasToc ? "content-with-toc" : "content"}>
+      <article class={hasToc ? "article-wide" : "article"}>
         <PostHeader
           title={post.data.title}
           date={post.data.date}
@@ -41,6 +46,13 @@ const { Content } = await render(post);
         </Prose>
         <PostNav prevPost={prevPost} nextPost={nextPost} />
       </article>
+      {
+        hasToc && (
+          <aside class="toc-aside">
+            <TableOfContents items={tocItems} />
+          </aside>
+        )
+      }
     </div>
     <Footer />
   </main>
@@ -53,12 +65,24 @@ const { Content } = await render(post);
     color: var(--text);
     display: grid;
     grid-template-rows: auto 1fr auto;
+    overflow-x: clip;
   }
 
   .content {
     padding: 0;
     width: 100%;
     min-width: 0;
+  }
+
+  .content-with-toc {
+    display: grid;
+    grid-template-columns: minmax(0, 800px) 220px;
+    column-gap: 48px;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 36px;
+    box-sizing: border-box;
+    width: 100%;
   }
 
   .article {
@@ -70,9 +94,34 @@ const { Content } = await render(post);
     box-sizing: border-box;
   }
 
+  .article-wide {
+    padding: 28px 0 60px;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .toc-aside {
+    padding-top: 28px;
+  }
+
+  @media (max-width: 1080px) {
+    .content-with-toc {
+      grid-template-columns: 1fr;
+      padding: 0 16px;
+    }
+
+    .toc-aside {
+      display: none;
+    }
+  }
+
   @media (max-width: 640px) {
     .article {
       padding: 20px 16px 48px;
+    }
+
+    .article-wide {
+      padding: 20px 0 48px;
     }
   }
 </style>
