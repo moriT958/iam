@@ -10,9 +10,6 @@ importers:
       astro:
         specifier: ^6.4.2
         version: 6.4.2(rollup@4.61.0)
-      ayu:
-        specifier: ^9.0.0
-        version: 9.0.0
     devDependencies:
       "@typescript-eslint/parser":
         specifier: ^8.60.0
@@ -964,12 +961,6 @@ packages:
         integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==,
       }
 
-  "@types/chroma-js@2.4.5":
-    resolution:
-      {
-        integrity: sha512-6ISjhzJViaPCy2q2e6PgK+8HcHQDQ0V2LDiKmYAh+jJlLqDa6HbwDh0wOevHY0kHHUx0iZwjSRbVD47WOUx5EQ==,
-      }
-
   "@types/debug@4.1.13":
     resolution:
       {
@@ -1167,13 +1158,6 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
-  ayu@9.0.0:
-    resolution:
-      {
-        integrity: sha512-280iAzKrTKqQZPGv/Cjvyd2lpGe9mZMepkqtwvewq2gbPdJqVwUHKsfk7/ddp/O1J9szbkHOAArhlN0L16NlXQ==,
-      }
-    engines: { node: ">=22.18.0" }
-
   bail@2.0.2:
     resolution:
       {
@@ -1237,12 +1221,6 @@ packages:
         integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==,
       }
     engines: { node: ">= 20.19.0" }
-
-  chroma-js@2.6.0:
-    resolution:
-      {
-        integrity: sha512-BLHvCB9s8Z1EV4ethr6xnkl/P2YRFOGqfgvuMG/MyCbZPrTA+NeiByY6XvgF0zP4/2deU2CXnWyMa3zu1LqQ3A==,
-      }
 
   ci-info@4.4.0:
     resolution:
@@ -2359,12 +2337,6 @@ packages:
     resolution:
       {
         integrity: sha512-8DY+kFsDkNXy1sJglUfuODx1/opAGJGyrTuFqEoN90oRc2Vk0ZbD4K2qmKXBBEhZQzdKHIVfEJpDU8Ak2NJEvQ==,
-      }
-
-  nonenumerable@1.1.1:
-    resolution:
-      {
-        integrity: sha512-ptUD9w9D8WqW6fuJJkZNCImkf+0vdbgUTbRK3i7jsy3olqtH96hYE6Q/S3Tx9NWbcB/ocAjYshXCAUP0lZ9B4Q==,
       }
 
   normalize-path@3.0.0:
@@ -3639,8 +3611,6 @@ snapshots:
 
   "@shikijs/vscode-textmate@10.0.2": {}
 
-  "@types/chroma-js@2.4.5": {}
-
   "@types/debug@4.1.13":
     dependencies:
       "@types/ms": 2.1.0
@@ -3862,12 +3832,6 @@ snapshots:
 
   axobject-query@4.1.0: {}
 
-  ayu@9.0.0:
-    dependencies:
-      "@types/chroma-js": 2.4.5
-      chroma-js: 2.6.0
-      nonenumerable: 1.1.1
-
   bail@2.0.2: {}
 
   balanced-match@4.0.4: {}
@@ -3893,8 +3857,6 @@ snapshots:
   chokidar@5.0.0:
     dependencies:
       readdirp: 5.0.0
-
-  chroma-js@2.6.0: {}
 
   ci-info@4.4.0: {}
 
@@ -4736,8 +4698,6 @@ snapshots:
   node-fetch-native@1.6.7: {}
 
   node-mock-http@1.0.4: {}
-
-  nonenumerable@1.1.1: {}
 
   normalize-path@3.0.0: {}
 

@@ -1,23 +1,154 @@
+---
+type Props = {
+  title: string;
+  description: string;
+};
+
+const { title, description } = Astro.props;
+
+const THEME_BOOTSTRAP_SCRIPT = `(function(){var cookies=document.cookie.split(";");for(var i=0;i<cookies.length;i++){var parts=cookies[i].trim().split("=");if(parts[0]==="var-card-theme"){if(parts[1]==="dark"||parts[1]==="light"){document.documentElement.setAttribute("data-theme",parts[1]);}break;}}})();`;
+---
+
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang="ja" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link
+      rel="preload"
+      as="font"
+      href="/fonts/jetbrains-mono.woff2"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <title>{title}</title>
+    <script is:inline set:html={THEME_BOOTSTRAP_SCRIPT} />
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+<style is:global>
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("/fonts/jetbrains-mono.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  @keyframes border-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  html {
+    --bg: #f8f9fa;
+    --panel: #fafafa;
+    --panel2: #f5f6f7;
+    --border: #6b7d8f1f;
+    --border-strong: #6b7d8f47;
+    --fg: #5c6166;
+    --text: #5c6166;
+    --muted: #828e9f;
+    --dim: #787b8099;
+    --accent: #f29718;
+    --accent-soft: #f297181a;
+    --accent-border: #f2971859;
+    --hover-bg: #6b7d8f0f;
+    --code-string: #86b300;
+    --code-func: #f2a300;
+    --code-keyword: #ff7e33;
+    --blue: #399ee6;
+    --teal: #4cbf99;
+    --purple: #a37acc;
+    --red: #f07171;
+    --hero-shell-bg: #f2971826;
+    --hero-ring-gradient: conic-gradient(
+      from 0deg,
+      transparent 30%,
+      #f2971899 48%,
+      #ffffff 50%,
+      #f2971899 52%,
+      transparent 70%
+    );
+    --hero-inner-bg: var(--bg);
+    --hero-pill-border: #6b7d8f1f;
+    --hero-pill-bg: #fafafa8c;
+    --search-overlay-bg: rgba(0, 0, 0, 0.25);
+    --search-panel-bg: #fafafaf7;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0d1017;
+    --panel: #141821;
+    --panel2: #10141c;
+    --border: #1b1f29;
+    --border-strong: #262a35;
+    --fg: #bfbdb6;
+    --text: #bfbdb6;
+    --muted: #555e73;
+    --dim: #99adbf8c;
+    --accent: #e6b450;
+    --accent-soft: #e6b45024;
+    --accent-border: #e6b4506b;
+    --hover-bg: #bfbdb60d;
+    --code-string: #aad94c;
+    --code-func: #ffb454;
+    --code-keyword: #ff8f40;
+    --blue: #59c2ff;
+    --teal: #95e6cb;
+    --purple: #d2a6ff;
+    --red: #f07178;
+    --hero-shell-bg: #e6b4501f;
+    --hero-ring-gradient: conic-gradient(
+      from 0deg,
+      transparent 30%,
+      #e6b450cc 48%,
+      rgba(255, 255, 255, 0.33) 50%,
+      #e6b450cc 52%,
+      transparent 70%
+    );
+    --hero-inner-bg: var(--bg);
+    --hero-pill-border: #bfbdb61a;
+    --hero-pill-bg: #bfbdb60f;
+    --search-overlay-bg: rgba(0, 0, 0, 0.6);
+    --search-panel-bg: #141821f5;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family:
+      "JetBrains Mono",
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
 </style>
