@@ -1,0 +1,81 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = {
+  prevPost?: CollectionEntry<"posts"> | null;
+  nextPost?: CollectionEntry<"posts"> | null;
+};
+
+const { prevPost, nextPost } = Astro.props;
+---
+
+<div class="prev-next">
+  {
+    prevPost ? (
+      <a href={`/posts/${prevPost.id}`} class="prev-card">
+        <div class="nav-label">← 前の記事</div>
+        <div class="nav-title">{prevPost.data.title}</div>
+      </a>
+    ) : (
+      <div />
+    )
+  }
+  {
+    nextPost ? (
+      <a href={`/posts/${nextPost.id}`} class="next-card">
+        <div class="nav-label">次の記事 →</div>
+        <div class="nav-title">{nextPost.data.title}</div>
+      </a>
+    ) : (
+      <div />
+    )
+  }
+</div>
+
+<style>
+  .prev-next {
+    margin-top: 36px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .prev-card,
+  .next-card {
+    padding: 14px;
+    background: var(--panel);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color 0.12s;
+  }
+
+  .prev-card:hover,
+  .next-card:hover {
+    border-color: var(--border-strong);
+  }
+
+  .next-card {
+    text-align: right;
+  }
+
+  .nav-label {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .nav-title {
+    font-size: 13px;
+    margin-top: 3px;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 640px) {
+    .prev-next {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
