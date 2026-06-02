@@ -27,6 +27,8 @@ const { tag, posts } = Astro.props;
 <Layout
   title={`#${tag} | morita's website`}
   description={`"#${tag}" タグの記事一覧。`}
+  ogType="website"
+  ogImage="/images/morit958.webp"
 >
   <main class="page">
     <Header activePage="posts" />

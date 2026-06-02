@@ -31,6 +31,8 @@ const hasToc = tocItems.length > 0;
 <Layout
   title={`${post.data.title} | morita's website`}
   description={post.data.description ?? post.data.title}
+  ogType="article"
+  ogImage="/images/morit958.webp"
 >
   <main class="page">
     <Header activePage="posts" />

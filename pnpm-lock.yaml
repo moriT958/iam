@@ -16,6 +16,9 @@ importers:
       rehype-highlight:
         specifier: ^7.0.2
         version: 7.0.2
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
     devDependencies:
       "@astrojs/check":
         specifier: ^0.9.9
@@ -35,6 +38,9 @@ importers:
       prettier-plugin-astro:
         specifier: 0.14.1
         version: 0.14.1
+      svgo:
+        specifier: ^4.0.1
+        version: 4.0.1
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

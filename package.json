@@ -16,7 +16,8 @@
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.0",
     "astro": "^6.4.2",
-    "rehype-highlight": "^7.0.2"
+    "rehype-highlight": "^7.0.2",
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
@@ -25,6 +26,7 @@
     "eslint-plugin-astro": "^1.7.0",
     "prettier": "3.8.3",
     "prettier-plugin-astro": "0.14.1",
+    "svgo": "^4.0.1",
     "typescript": "^6.0.3"
   },
   "engines": {
