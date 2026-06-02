@@ -113,7 +113,7 @@
     overflow-wrap: normal;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    font-family: inherit;
+    font-family: var(--font-plemol), monospace;
   }
 
   .prose :global(.copy-btn) {
@@ -166,6 +166,25 @@
     max-width: 100%;
     border-radius: 6px;
     margin-top: 18px;
+    padding: 18px;
+  }
+
+  .prose :global(figure) {
+    margin-top: 18px;
+  }
+
+  .prose :global(figure img) {
+    margin-top: 0;
+  }
+
+  .prose :global(figcaption) {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .prose :global(figcaption a) {
+    color: var(--teal);
   }
 
   .prose :global(table) {
