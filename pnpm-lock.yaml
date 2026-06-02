@@ -7,6 +7,9 @@ settings:
 importers:
   .:
     dependencies:
+      "@astrojs/markdown-remark":
+        specifier: ^7.2.0
+        version: 7.2.0
       astro:
         specifier: ^6.4.2
         version: 6.4.2(rollup@4.61.0)(yaml@2.9.0)
