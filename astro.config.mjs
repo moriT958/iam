@@ -1,6 +1,5 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
-import { fontSubset } from "./integrations/font-subset.ts";
 import { unified } from "@astrojs/markdown-remark";
 import rehypeHighlight from "rehype-highlight";
 import { visit } from "unist-util-visit";
@@ -19,7 +18,7 @@ function rehypeLazyImages() {
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [fontSubset()],
+  integrations: [],
   fonts: [
     {
       provider: fontProviders.local(),

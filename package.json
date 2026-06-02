@@ -13,6 +13,7 @@
     "fmt:check": "prettier . --check",
     "check": "astro check"
   },
+  "private": true,
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.0",
     "astro": "^6.4.2",
@@ -20,6 +21,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "ftsubset": "workspace:*",
     "@astrojs/check": "^0.9.9",
     "@types/node": "^25.9.1",
     "@typescript-eslint/parser": "^8.60.0",
