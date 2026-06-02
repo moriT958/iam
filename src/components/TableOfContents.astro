@@ -32,8 +32,9 @@ const { items } = Astro.props;
 
 <style>
   .toc {
-    position: sticky;
+    position: fixed;
     top: 72px;
+    width: 220px;
     max-height: calc(100vh - 90px);
     overflow-y: auto;
     padding-right: 4px;
@@ -75,51 +76,61 @@ const { items } = Astro.props;
 </style>
 
 <script>
+  const aside = document.querySelector<HTMLElement>(".toc-aside");
   const nav = document.querySelector<HTMLElement>(".toc");
-  if (nav) {
-    const anchors = new Map<string, HTMLAnchorElement>();
-    nav.querySelectorAll<HTMLAnchorElement>("a[href^='#']").forEach((a) => {
-      const id = (a.getAttribute("href") ?? "").slice(1);
-      if (id) anchors.set(id, a);
-    });
 
-    const ids = Array.from(anchors.keys());
-    let current = "";
+  if (!nav) throw new Error();
 
-    const setActive = (id: string) => {
-      if (id === current) return;
-      const prev = anchors.get(current);
-      if (prev) prev.style.removeProperty("color");
-      const next = anchors.get(id);
-      if (next) next.style.setProperty("color", "var(--teal)");
-      current = id;
+  if (aside) {
+    const sync = () => {
+      nav.style.left = aside.getBoundingClientRect().left + "px";
     };
-
-    const update = () => {
-      const offset = 88;
-      let best = ids[0];
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top < offset) {
-          best = id;
-        }
-      }
-      if (best) setActive(best);
-    };
-
-    let raf = 0;
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          update();
-          raf = 0;
-        });
-      },
-      { passive: true },
-    );
-
-    update();
+    sync();
+    window.addEventListener("resize", sync, { passive: true });
   }
+
+  const anchors = new Map<string, HTMLAnchorElement>();
+  nav.querySelectorAll<HTMLAnchorElement>("a[href^='#']").forEach((a) => {
+    const id = (a.getAttribute("href") ?? "").slice(1);
+    if (id) anchors.set(id, a);
+  });
+
+  const ids = Array.from(anchors.keys());
+  let current = "";
+
+  const setActive = (id: string) => {
+    if (id === current) return;
+    const prev = anchors.get(current);
+    if (prev) prev.style.removeProperty("color");
+    const next = anchors.get(id);
+    if (next) next.style.setProperty("color", "var(--teal)");
+    current = id;
+  };
+
+  const update = () => {
+    const offset = 88;
+    let best = ids[0];
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < offset) {
+        best = id;
+      }
+    }
+    if (best) setActive(best);
+  };
+
+  let raf = 0;
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        update();
+        raf = 0;
+      });
+    },
+    { passive: true },
+  );
+
+  update();
 </script>

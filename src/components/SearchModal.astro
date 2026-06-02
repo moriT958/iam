@@ -2,7 +2,10 @@
 import { getCollection } from "astro:content";
 import searchIconRaw from "../assets/search-icon.svg?raw";
 
-const allPosts = await getCollection("posts");
+const allPosts = await getCollection(
+  "posts",
+  ({ data }) => import.meta.env.DEV || !data.draft,
+);
 const searchPosts = allPosts
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .map((p) => ({

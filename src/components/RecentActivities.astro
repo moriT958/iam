@@ -7,11 +7,9 @@ type Activity = {
 
 type Props = {
   items: Activity[];
-  visibleNum: number;
 };
 
-const { items, visibleNum } = Astro.props;
-const hasMore = items.length > visibleNum;
+const { items } = Astro.props;
 ---
 
 <section class="recent-activities">
@@ -26,13 +24,8 @@ const hasMore = items.length > visibleNum;
       items.length === 0 ? (
         <p class="empty">直近の活動はありません。</p>
       ) : (
-        items.map((item, i) => (
-          <a
-            href={item.href}
-            class="activity-item"
-            data-index={i}
-            style={i >= visibleNum ? "display:none" : ""}
-          >
+        items.map((item) => (
+          <a href={item.href} class="activity-item">
             <span class="date">{item.date}</span>
             <span class="item-title">{item.title}</span>
           </a>
@@ -40,25 +33,7 @@ const hasMore = items.length > visibleNum;
       )
     }
   </div>
-  {
-    hasMore && (
-      <div class="more-wrap">
-        <button id="show-more" type="button">
-          more
-        </button>
-      </div>
-    )
-  }
 </section>
-
-<script>
-  document.getElementById("show-more")?.addEventListener("click", () => {
-    document
-      .querySelectorAll("#activity-list .activity-item")
-      .forEach((el) => ((el as HTMLElement).style.display = ""));
-    document.getElementById("show-more")?.parentElement?.remove();
-  });
-</script>
 
 <style>
   .recent-activities {
@@ -123,25 +98,5 @@ const hasMore = items.length > visibleNum;
     color: var(--muted);
     font-size: 13px;
     padding: 12px 4px;
-  }
-
-  .more-wrap {
-    margin-top: 12px;
-    text-align: center;
-  }
-
-  #show-more {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 12px;
-    padding: 4px 18px;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-
-  #show-more:hover {
-    color: var(--fg);
-    border-color: var(--border-strong);
   }
 </style>

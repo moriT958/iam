@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import HeroCard from "../components/HeroCard.astro";
@@ -21,27 +22,23 @@ const profile = {
   ],
 };
 
-const allActivities = [
-  {
-    date: "2026-05-20",
-    title: "Neovim を lazy.nvim 構成へ移行した話",
-    href: "/posts/nvim-lazy-migration",
-  },
-  {
-    date: "2026-05-11",
-    title: "Tailwind v4 で oklch を使い倒す",
-    href: "/posts/tailwind-v4-oklch",
-  },
-  {
-    date: "2026-05-02",
-    title: "Bun の Workspace で Monorepo を組む",
-    href: "/posts/bun-workspaces",
-  },
-];
-
-const oneMonthAgo = new Date();
-oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-const activities = allActivities.filter((a) => new Date(a.date) >= oneMonthAgo);
+const allPosts = await getCollection(
+  "posts",
+  ({ data }) => import.meta.env.DEV || !data.draft,
+);
+const now = new Date();
+const activities = allPosts
+  .filter(
+    (p) =>
+      p.data.date.getFullYear() === now.getFullYear() &&
+      p.data.date.getMonth() === now.getMonth(),
+  )
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .map((p) => ({
+    date: p.data.date.toISOString().slice(0, 10),
+    title: p.data.title,
+    href: p.data.url ?? `/posts/${p.id}`,
+  }));
 ---
 
 <Layout
@@ -52,7 +49,7 @@ const activities = allActivities.filter((a) => new Date(a.date) >= oneMonthAgo);
     <Header activePage="home" />
     <div class="content-wrap">
       <HeroCard {...profile} />
-      <RecentActivities items={activities} visibleNum={4} />
+      <RecentActivities items={activities} />
     </div>
     <Footer />
   </main>

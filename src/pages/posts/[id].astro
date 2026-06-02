@@ -11,7 +11,7 @@ import TableOfContents from "../../components/TableOfContents.astro";
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   const sorted = posts
-    .filter((p) => !p.data.url)
+    .filter((p) => (import.meta.env.DEV || !p.data.draft) && !p.data.url)
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
   return sorted.map((post, i) => {
     const prevPost = sorted[i + 1] ?? null;

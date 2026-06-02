@@ -4,7 +4,10 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 
-const allPosts = await getCollection("posts");
+const allPosts = await getCollection(
+  "posts",
+  ({ data }) => import.meta.env.DEV || !data.draft,
+);
 const sorted = allPosts.sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
