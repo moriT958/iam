@@ -47,6 +47,7 @@ const searchPosts = allPosts
 </div>
 
 <script define:vars={{ searchPosts }} is:inline>
+  (() => {
   const overlay = document.getElementById("search-overlay");
   const panel = document.getElementById("search-panel");
   const input = document.getElementById("search-input");
@@ -211,6 +212,7 @@ const searchPosts = allPosts
       }
     }
   });
+  })();
 </script>
 
 <style>
