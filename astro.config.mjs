@@ -47,6 +47,10 @@ export default defineConfig({
     // `backdrop-filter` declaration when no browser targets are configured,
     // keeping only `-webkit-backdrop-filter`. Pin back to esbuild so both
     // declarations survive minification.
+    //
+    // TODO: lightningcss 側の未修正バグと思われる。
+    // parcel-bundler/lightningcss#695, 修正 PR #1259 は未マージ (2026-08-11 時点)
+    // upstream で修正されたら cssMinify の固定を外す。
     build: {
       cssMinify: "esbuild",
     },
