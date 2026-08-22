@@ -32,6 +32,15 @@ const cards = await Promise.all(
   <main class="page">
     <Header activePage="talks" />
     <div class="content-wrap">
+      <div class="talks-heading">
+        <div class="cmd-line">
+          <span class="accent">$ </span>
+          <span class="typed">ls slides/</span>
+          <span class="caret"></span>
+        </div>
+        <div class="subtitle">{sorted.length} slides</div>
+      </div>
+
       <div class="grid">
         {
           cards.map(({ slide, previewHtml }) => {
@@ -67,6 +76,78 @@ const cards = await Promise.all(
     max-width: 960px;
     margin: 0 auto;
     width: 100%;
+  }
+
+  /* --- TalksHeading --- */
+  .talks-heading {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+  }
+
+  .cmd-line {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.3px;
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+
+  .typed {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    animation: typing-talks 0.5s steps(10) forwards;
+  }
+
+  @keyframes typing-talks {
+    from {
+      width: 0ch;
+    }
+    to {
+      width: 10ch;
+    }
+  }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    vertical-align: -0.12em;
+    background: var(--fg);
+    margin-left: 1px;
+    animation:
+      blink 1.05s steps(1) infinite,
+      caret-hide-talks 0s 0.5s forwards;
+  }
+
+  @keyframes caret-hide-talks {
+    to {
+      opacity: 0;
+      width: 0;
+      margin: 0;
+    }
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    opacity: 0;
+    animation: subtitle-fade-in-talks 0.3s ease 0.5s forwards;
+  }
+
+  @keyframes subtitle-fade-in-talks {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .grid {

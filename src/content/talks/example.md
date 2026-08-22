@@ -3,7 +3,7 @@ title: "サンプルスライド"
 date: 2026-08-22
 description: "reveal.js によるスライド公開の動作確認用デッキ"
 theme: black
-draft: true
+draft: false
 ---
 
 ## サンプルスライド
