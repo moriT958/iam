@@ -6,7 +6,7 @@ import closeIconRaw from "../assets/close-icon.svg?raw";
 import SearchModal from "./SearchModal.astro";
 
 type Props = {
-  activePage: "home" | "posts" | "archives";
+  activePage: "home" | "posts" | "archives" | "talks";
 };
 
 const { activePage } = Astro.props;
@@ -17,6 +17,7 @@ const { activePage } = Astro.props;
     <span class="brand-icon">$</span>
     <span>morit958.com</span>
   </a>
+  <div class="spacer"></div>
   <nav>
     <a href="/" class={activePage === "home" ? "nav-link active" : "nav-link"}
       >Home</a
@@ -30,8 +31,11 @@ const { activePage } = Astro.props;
       class={activePage === "archives" ? "nav-link active" : "nav-link"}
       >Archives</a
     >
+    <a
+      href="/talks"
+      class={activePage === "talks" ? "nav-link active" : "nav-link"}>Talks</a
+    >
   </nav>
-  <div class="spacer"></div>
   <SearchModal />
   <button type="button" id="theme-toggle" aria-label="Switch theme">
     <span class="moon-icon" set:html={moonIconRaw} />
@@ -58,12 +62,17 @@ const { activePage } = Astro.props;
         class={activePage === "archives" ? "mobile-link active" : "mobile-link"}
         >Archives</a
       >
+      <a
+        href="/talks"
+        class={activePage === "talks" ? "mobile-link active" : "mobile-link"}
+        >Talks</a
+      >
     </div>
   </div>
 </header>
 
-<script>
-  const themeBtn = document.getElementById("theme-toggle")!;
+<script is:inline>
+  const themeBtn = document.getElementById("theme-toggle");
   const COOKIE = "var-card-theme";
 
   themeBtn.addEventListener("click", () => {
@@ -73,7 +82,7 @@ const { activePage } = Astro.props;
     document.cookie = `${COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
   });
 
-  const menuBtn = document.getElementById("mobile-menu-btn")!;
+  const menuBtn = document.getElementById("mobile-menu-btn");
   menuBtn.addEventListener("click", () => {
     const open = menuBtn.getAttribute("aria-expanded") === "true";
     menuBtn.setAttribute("aria-expanded", String(!open));
@@ -86,15 +95,22 @@ const { activePage } = Astro.props;
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 14px 36px;
-    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    border: 1px solid var(--border);
     background: var(--bg);
-    background: color-mix(in srgb, var(--bg) 30%, transparent);
+    background: color-mix(in srgb, var(--bg) 55%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    border-radius: 999px;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 6px 20px -10px rgba(0, 0, 0, 0.12);
     position: sticky;
-    top: 0;
+    top: 16px;
     z-index: 100;
+    width: calc(100% - 32px);
+    max-width: 860px;
+    margin: 16px auto 0;
   }
 
   .brand {
@@ -114,16 +130,19 @@ const { activePage } = Astro.props;
 
   nav {
     display: flex;
-    gap: 14px;
-    margin-left: 18px;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fg) 5%, transparent);
+    border: 1px solid var(--border);
   }
 
   .nav-link {
     color: var(--muted);
     font-size: 13px;
-    padding: 6px 4px;
+    padding: 6px 14px;
+    border-radius: 999px;
     text-decoration: none;
-    border-bottom: 2px solid transparent;
   }
 
   .nav-link:hover {
@@ -131,8 +150,8 @@ const { activePage } = Astro.props;
   }
 
   .nav-link.active {
-    color: var(--fg);
-    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
   }
 
   .spacer {
@@ -176,6 +195,7 @@ const { activePage } = Astro.props;
   /* mobile nav */
   .mobile-nav-wrap {
     display: none;
+    position: relative;
   }
 
   #mobile-menu-btn {
@@ -185,7 +205,7 @@ const { activePage } = Astro.props;
     background: transparent;
     border: 1px solid var(--border);
     color: var(--muted);
-    border-radius: 8px;
+    border-radius: 999px;
     width: 34px;
     height: 30px;
     cursor: pointer;
@@ -212,11 +232,21 @@ const { activePage } = Astro.props;
 
   #mobile-dropdown {
     display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
     flex-direction: column;
-    width: 100%;
-    border-top: 1px solid var(--border);
-    padding-top: 8px;
-    padding-bottom: 4px;
+    min-width: 160px;
+    background: var(--bg);
+    background: color-mix(in srgb, var(--bg) 55%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.08),
+      0 8px 32px -8px rgba(0, 0, 0, 0.2);
+    padding: 6px;
     gap: 2px;
   }
 
@@ -227,12 +257,14 @@ const { activePage } = Astro.props;
   .mobile-link {
     color: var(--muted);
     font-size: 14px;
-    padding: 10px 4px;
+    padding: 10px 12px;
+    border-radius: 10px;
     text-decoration: none;
   }
 
   .mobile-link:hover {
     color: var(--fg);
+    background: var(--hover-bg);
   }
 
   .mobile-link.active {
@@ -242,9 +274,8 @@ const { activePage } = Astro.props;
 
   @media (max-width: 640px) {
     header {
-      padding: 12px 16px;
+      padding: 8px 8px 8px 20px;
       gap: 10px;
-      flex-wrap: wrap;
     }
 
     nav {
@@ -252,7 +283,7 @@ const { activePage } = Astro.props;
     }
 
     .mobile-nav-wrap {
-      display: contents;
+      display: block;
     }
   }
 </style>

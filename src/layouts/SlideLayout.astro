@@ -1,0 +1,100 @@
+---
+import Layout from "./Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import revealCssHref from "reveal.js/reveal.css?url";
+import blackThemeHref from "reveal.js/theme/black.css?url";
+import whiteThemeHref from "reveal.js/theme/white.css?url";
+import monokaiHref from "reveal.js/plugin/highlight/monokai.css?url";
+
+type Props = {
+  title: string;
+  description: string;
+  theme?: string;
+  markdown: string;
+};
+
+const { title, description, theme, markdown } = Astro.props;
+const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
+---
+
+<Layout
+  title={`${title} | morita's slides`}
+  description={description}
+  ogType="website"
+  ogImage="/images/morit958.webp"
+>
+  <link rel="stylesheet" href={revealCssHref} />
+  <link rel="stylesheet" href={themeHref} />
+  <link rel="stylesheet" href={monokaiHref} />
+  <main class="page">
+    <Header activePage="talks" />
+    <div class="deck-wrap">
+      <div class="deck-frame">
+        <div class="reveal">
+          <div class="slides">
+            <section
+              data-markdown
+              data-separator="^\r?\n---\r?\n$"
+              data-separator-vertical="^\r?\n--\r?\n$"
+            >
+              <textarea data-template set:text={markdown} />
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+    <Footer />
+  </main>
+</Layout>
+
+<script>
+  import Reveal from "reveal.js";
+  import Markdown from "reveal.js/plugin/markdown";
+  import Highlight from "reveal.js/plugin/highlight";
+
+  const deck = new Reveal({
+    plugins: [Markdown, Highlight],
+    embedded: true,
+    hash: true,
+    controls: true,
+    progress: true,
+    center: true,
+    transition: "none",
+    width: 960,
+    height: 540,
+  });
+  deck.initialize();
+</script>
+
+<style>
+  .page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .deck-wrap {
+    padding: 32px 36px 48px;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .deck-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.3);
+  }
+
+  .reveal {
+    position: absolute;
+    inset: 0;
+  }
+</style>

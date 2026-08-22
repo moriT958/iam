@@ -1,0 +1,137 @@
+---
+import { getCollection } from "astro:content";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const allSlides = await getCollection(
+  "slides",
+  ({ data }) => import.meta.env.DEV || !data.draft,
+);
+const sorted = allSlides.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+const processor = await createMarkdownProcessor();
+const cards = await Promise.all(
+  sorted.map(async (slide) => {
+    const firstSlide = (slide.body ?? "").split(/\r?\n---\r?\n/)[0] ?? "";
+    const { code } = await processor.render(firstSlide);
+    return { slide, previewHtml: code };
+  }),
+);
+---
+
+<Layout
+  title="Talks | morita's website"
+  description="morit958 の発表スライド一覧。"
+  ogType="website"
+  ogImage="/images/morit958.webp"
+>
+  <main class="page">
+    <Header activePage="talks" />
+    <div class="content-wrap">
+      <div class="grid">
+        {
+          cards.map(({ slide, previewHtml }) => {
+            const dateStr = slide.data.date.toISOString().slice(0, 10);
+            return (
+              <a href={`/talks/${slide.id}`} class="card">
+                <div class="preview" set:html={previewHtml} />
+                <div class="meta">
+                  <span class="title">{slide.data.title}</span>
+                  <span class="date">{dateStr}</span>
+                </div>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+    <Footer />
+  </main>
+</Layout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .content-wrap {
+    padding: 32px 36px 48px;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  .card:hover {
+    border-color: var(--border-strong);
+  }
+
+  .preview {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #191919;
+    color: #fff;
+    font-family: sans-serif;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  .preview :global(h1, h2, h3) {
+    font-size: 1.6em;
+    margin: 0 0 0.3em;
+  }
+
+  .preview :global(p) {
+    margin: 0.2em 0;
+  }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 12px;
+  }
+
+  .title {
+    font-size: 13px;
+    color: var(--fg);
+  }
+
+  .date {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .content-wrap {
+      padding: 20px 16px 40px;
+    }
+  }
+</style>
