@@ -19,6 +19,7 @@ const { slide } = Astro.props;
 <SlideLayout
   title={slide.data.title}
   description={slide.data.description ?? slide.data.title}
+  date={slide.data.date}
   theme={slide.data.theme}
   markdown={slide.body ?? ""}
 />
