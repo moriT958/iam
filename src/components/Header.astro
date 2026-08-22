@@ -1,8 +1,10 @@
 ---
 import moonIconRaw from "../assets/moon-icon.svg?raw";
 import sunIconRaw from "../assets/sun-icon.svg?raw";
-import menuIconRaw from "../assets/menu-icon.svg?raw";
-import closeIconRaw from "../assets/close-icon.svg?raw";
+import homeIconRaw from "../assets/home-icon.svg?raw";
+import postsIconRaw from "../assets/posts-icon.svg?raw";
+import talksIconRaw from "../assets/talks-icon.svg?raw";
+import archivesIconRaw from "../assets/archives-icon.svg?raw";
 import SearchModal from "./SearchModal.astro";
 
 type Props = {
@@ -27,13 +29,13 @@ const { activePage } = Astro.props;
       class={activePage === "posts" ? "nav-link active" : "nav-link"}>Posts</a
     >
     <a
+      href="/talks"
+      class={activePage === "talks" ? "nav-link active" : "nav-link"}>Talks</a
+    >
+    <a
       href="/archives"
       class={activePage === "archives" ? "nav-link active" : "nav-link"}
       >Archives</a
-    >
-    <a
-      href="/talks"
-      class={activePage === "talks" ? "nav-link active" : "nav-link"}>Talks</a
     >
   </nav>
   <SearchModal />
@@ -41,35 +43,42 @@ const { activePage } = Astro.props;
     <span class="moon-icon" set:html={moonIconRaw} />
     <span class="sun-icon" set:html={sunIconRaw} />
   </button>
-  <div class="mobile-nav-wrap">
-    <button type="button" id="mobile-menu-btn" aria-label="Open menu">
-      <span class="menu-icon" set:html={menuIconRaw} />
-      <span class="close-icon" set:html={closeIconRaw} />
-    </button>
-    <div id="mobile-dropdown">
-      <a
-        href="/"
-        class={activePage === "home" ? "mobile-link active" : "mobile-link"}
-        >Home</a
-      >
-      <a
-        href="/posts"
-        class={activePage === "posts" ? "mobile-link active" : "mobile-link"}
-        >Posts</a
-      >
-      <a
-        href="/archives"
-        class={activePage === "archives" ? "mobile-link active" : "mobile-link"}
-        >Archives</a
-      >
-      <a
-        href="/talks"
-        class={activePage === "talks" ? "mobile-link active" : "mobile-link"}
-        >Talks</a
-      >
-    </div>
-  </div>
 </header>
+
+<nav class="mobile-bottom-bar">
+  <a
+    href="/"
+    class={activePage === "home" ? "bottom-link active" : "bottom-link"}
+    aria-current={activePage === "home" ? "page" : undefined}
+  >
+    <span class="bottom-link-icon" set:html={homeIconRaw} />
+    <span class="bottom-link-label">Home</span>
+  </a>
+  <a
+    href="/posts"
+    class={activePage === "posts" ? "bottom-link active" : "bottom-link"}
+    aria-current={activePage === "posts" ? "page" : undefined}
+  >
+    <span class="bottom-link-icon" set:html={postsIconRaw} />
+    <span class="bottom-link-label">Posts</span>
+  </a>
+  <a
+    href="/talks"
+    class={activePage === "talks" ? "bottom-link active" : "bottom-link"}
+    aria-current={activePage === "talks" ? "page" : undefined}
+  >
+    <span class="bottom-link-icon" set:html={talksIconRaw} />
+    <span class="bottom-link-label">Talks</span>
+  </a>
+  <a
+    href="/archives"
+    class={activePage === "archives" ? "bottom-link active" : "bottom-link"}
+    aria-current={activePage === "archives" ? "page" : undefined}
+  >
+    <span class="bottom-link-icon" set:html={archivesIconRaw} />
+    <span class="bottom-link-label">Archives</span>
+  </a>
+</nav>
 
 <script is:inline>
   const themeBtn = document.getElementById("theme-toggle");
@@ -80,13 +89,6 @@ const { activePage } = Astro.props;
     const next = current === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
     document.cookie = `${COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
-  });
-
-  const menuBtn = document.getElementById("mobile-menu-btn");
-  menuBtn.addEventListener("click", () => {
-    const open = menuBtn.getAttribute("aria-expanded") === "true";
-    menuBtn.setAttribute("aria-expanded", String(!open));
-    menuBtn.setAttribute("aria-label", open ? "Open menu" : "Close menu");
   });
 </script>
 
@@ -128,7 +130,7 @@ const { activePage } = Astro.props;
     color: var(--accent);
   }
 
-  nav {
+  header nav {
     display: flex;
     gap: 2px;
     padding: 4px;
@@ -192,84 +194,9 @@ const { activePage } = Astro.props;
     display: inline-flex;
   }
 
-  /* mobile nav */
-  .mobile-nav-wrap {
+  /* mobile bottom bar */
+  .mobile-bottom-bar {
     display: none;
-    position: relative;
-  }
-
-  #mobile-menu-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 999px;
-    width: 34px;
-    height: 30px;
-    cursor: pointer;
-    font-family: inherit;
-    flex-shrink: 0;
-  }
-
-  #mobile-menu-btn:hover {
-    color: var(--fg);
-    border-color: var(--border-strong);
-  }
-
-  .close-icon {
-    display: none;
-  }
-
-  #mobile-menu-btn[aria-expanded="true"] .menu-icon {
-    display: none;
-  }
-
-  #mobile-menu-btn[aria-expanded="true"] .close-icon {
-    display: inline-flex;
-  }
-
-  #mobile-dropdown {
-    display: none;
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    flex-direction: column;
-    min-width: 160px;
-    background: var(--bg);
-    background: color-mix(in srgb, var(--bg) 55%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.08),
-      0 8px 32px -8px rgba(0, 0, 0, 0.2);
-    padding: 6px;
-    gap: 2px;
-  }
-
-  #mobile-menu-btn[aria-expanded="true"] ~ #mobile-dropdown {
-    display: flex;
-  }
-
-  .mobile-link {
-    color: var(--muted);
-    font-size: 14px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    text-decoration: none;
-  }
-
-  .mobile-link:hover {
-    color: var(--fg);
-    background: var(--hover-bg);
-  }
-
-  .mobile-link.active {
-    color: var(--fg);
-    font-weight: 600;
   }
 
   @media (max-width: 640px) {
@@ -278,12 +205,67 @@ const { activePage } = Astro.props;
       gap: 10px;
     }
 
-    nav {
+    header nav {
       display: none;
     }
 
-    .mobile-nav-wrap {
+    .mobile-bottom-bar {
+      display: flex;
+      align-items: stretch;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-link {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 8px 0 6px;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .bottom-link-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 18px;
+      border-radius: 999px;
+    }
+
+    .bottom-link-icon svg {
       display: block;
+    }
+
+    .bottom-link-label {
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .bottom-link.active .bottom-link-icon {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .bottom-link.active .bottom-link-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    :global(body) {
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
     }
   }
 </style>

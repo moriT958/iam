@@ -229,9 +229,6 @@ const searchPosts = allPosts
     align-items: center;
     gap: 8px;
     margin-right: 8px;
-    transition:
-      color 0.12s,
-      border-color 0.12s;
   }
 
   #search-btn:hover {
@@ -242,6 +239,12 @@ const searchPosts = allPosts
   .shortcut-label {
     color: var(--dim);
     font-size: 11px;
+  }
+
+  @media (max-width: 640px) {
+    .shortcut-label {
+      display: none;
+    }
   }
 
   #search-overlay {
@@ -331,7 +334,6 @@ const searchPosts = allPosts
     border-bottom: 1px solid var(--border);
     cursor: pointer;
     background: transparent;
-    transition: background 0.1s;
   }
 
   :global(.result-item.active) {

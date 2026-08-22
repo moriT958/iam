@@ -10,11 +10,12 @@ import monokaiHref from "reveal.js/plugin/highlight/monokai.css?url";
 type Props = {
   title: string;
   description: string;
+  date: Date;
   theme?: string;
   markdown: string;
 };
 
-const { title, description, theme, markdown } = Astro.props;
+const { title, description, date, theme, markdown } = Astro.props;
 const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
 ---
 
@@ -30,6 +31,8 @@ const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
   <main class="page">
     <Header activePage="talks" />
     <div class="deck-wrap">
+      <a href="/talks" class="back-link">← Talks</a>
+      <div class="meta">{date.toISOString().slice(0, 10)}</div>
       <div class="deck-frame">
         <div class="reveal">
           <div class="slides">
@@ -81,6 +84,26 @@ const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
     max-width: 960px;
     margin: 0 auto;
     width: 100%;
+  }
+
+  .back-link {
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .back-link:hover {
+    color: var(--fg);
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 24px;
+    margin-bottom: 16px;
   }
 
   .deck-frame {
