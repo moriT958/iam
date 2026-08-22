@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import SlideLayout from "../../layouts/SlideLayout.astro";
+
+export async function getStaticPaths() {
+  const slides = await getCollection(
+    "slides",
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
+  return slides.map((slide) => ({
+    params: { id: slide.id },
+    props: { slide },
+  }));
+}
+
+const { slide } = Astro.props;
+---
+
+<SlideLayout
+  title={slide.data.title}
+  description={slide.data.description ?? slide.data.title}
+  theme={slide.data.theme}
+  markdown={slide.body ?? ""}
+/>

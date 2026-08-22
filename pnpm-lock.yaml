@@ -19,6 +19,9 @@ importers:
       rehype-highlight:
         specifier: ^7.0.2
         version: 7.0.2
+      reveal.js:
+        specifier: ^6.0.1
+        version: 6.0.1
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
@@ -3326,6 +3329,12 @@ packages:
       }
     engines: { iojs: ">=1.0.0", node: ">=0.10.0" }
 
+  reveal.js@6.0.1:
+    resolution:
+      {
+        integrity: sha512-9eacArNIgqO2HGWOK+93gJNn+gvdGDVbSq+i2u3Ja9kjiHps0XNLpgYTZTYjKRH91uXy3clGimeGiw4umHG/tg==,
+      }
+
   rolldown@1.2.3:
     resolution:
       {
@@ -6282,6 +6291,8 @@ snapshots:
       unified: 11.0.5
 
   reusify@1.1.0: {}
+
+  reveal.js@6.0.1: {}
 
   rolldown@1.2.3:
     dependencies:

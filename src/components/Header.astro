@@ -6,7 +6,7 @@ import closeIconRaw from "../assets/close-icon.svg?raw";
 import SearchModal from "./SearchModal.astro";
 
 type Props = {
-  activePage: "home" | "posts" | "archives";
+  activePage: "home" | "posts" | "archives" | "talks";
 };
 
 const { activePage } = Astro.props;
@@ -30,6 +30,10 @@ const { activePage } = Astro.props;
       href="/archives"
       class={activePage === "archives" ? "nav-link active" : "nav-link"}
       >Archives</a
+    >
+    <a
+      href="/talks"
+      class={activePage === "talks" ? "nav-link active" : "nav-link"}>Talks</a
     >
   </nav>
   <SearchModal />
@@ -57,6 +61,11 @@ const { activePage } = Astro.props;
         href="/archives"
         class={activePage === "archives" ? "mobile-link active" : "mobile-link"}
         >Archives</a
+      >
+      <a
+        href="/talks"
+        class={activePage === "talks" ? "mobile-link active" : "mobile-link"}
+        >Talks</a
       >
     </div>
   </div>
