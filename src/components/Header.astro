@@ -48,49 +48,35 @@ const { activePage } = Astro.props;
 <nav class="mobile-bottom-bar">
   <a
     href="/"
-    class="bottom-link"
-    aria-label="Home"
+    class={activePage === "home" ? "bottom-link active" : "bottom-link"}
     aria-current={activePage === "home" ? "page" : undefined}
   >
-    <span
-      class={activePage === "home" ? "bottom-link-icon active" : "bottom-link-icon"}
-      set:html={homeIconRaw}
-    />
+    <span class="bottom-link-icon" set:html={homeIconRaw} />
+    <span class="bottom-link-label">Home</span>
   </a>
   <a
     href="/posts"
-    class="bottom-link"
-    aria-label="Posts"
+    class={activePage === "posts" ? "bottom-link active" : "bottom-link"}
     aria-current={activePage === "posts" ? "page" : undefined}
   >
-    <span
-      class={activePage === "posts" ? "bottom-link-icon active" : "bottom-link-icon"}
-      set:html={postsIconRaw}
-    />
+    <span class="bottom-link-icon" set:html={postsIconRaw} />
+    <span class="bottom-link-label">Posts</span>
   </a>
   <a
     href="/talks"
-    class="bottom-link"
-    aria-label="Talks"
+    class={activePage === "talks" ? "bottom-link active" : "bottom-link"}
     aria-current={activePage === "talks" ? "page" : undefined}
   >
-    <span
-      class={activePage === "talks" ? "bottom-link-icon active" : "bottom-link-icon"}
-      set:html={talksIconRaw}
-    />
+    <span class="bottom-link-icon" set:html={talksIconRaw} />
+    <span class="bottom-link-label">Talks</span>
   </a>
   <a
     href="/archives"
-    class="bottom-link"
-    aria-label="Archives"
+    class={activePage === "archives" ? "bottom-link active" : "bottom-link"}
     aria-current={activePage === "archives" ? "page" : undefined}
   >
-    <span
-      class={activePage === "archives"
-        ? "bottom-link-icon active"
-        : "bottom-link-icon"}
-      set:html={archivesIconRaw}
-    />
+    <span class="bottom-link-icon" set:html={archivesIconRaw} />
+    <span class="bottom-link-label">Archives</span>
   </a>
 </nav>
 
@@ -242,17 +228,20 @@ const { activePage } = Astro.props;
     .bottom-link {
       flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px 0;
+      gap: 2px;
+      padding: 8px 0 6px;
       color: var(--muted);
+      text-decoration: none;
     }
 
     .bottom-link-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 18px;
+      padding: 4px 18px;
       border-radius: 999px;
     }
 
@@ -260,13 +249,23 @@ const { activePage } = Astro.props;
       display: block;
     }
 
-    .bottom-link-icon.active {
+    .bottom-link-label {
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .bottom-link.active .bottom-link-icon {
       color: var(--accent);
       background: var(--accent-soft);
     }
 
+    .bottom-link.active .bottom-link-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
     :global(body) {
-      padding-bottom: calc(54px + env(safe-area-inset-bottom));
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
     }
   }
 </style>
