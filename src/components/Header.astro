@@ -27,13 +27,13 @@ const { activePage } = Astro.props;
       class={activePage === "posts" ? "nav-link active" : "nav-link"}>Posts</a
     >
     <a
+      href="/talks"
+      class={activePage === "talks" ? "nav-link active" : "nav-link"}>Talks</a
+    >
+    <a
       href="/archives"
       class={activePage === "archives" ? "nav-link active" : "nav-link"}
       >Archives</a
-    >
-    <a
-      href="/talks"
-      class={activePage === "talks" ? "nav-link active" : "nav-link"}>Talks</a
     >
   </nav>
   <SearchModal />
