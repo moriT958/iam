@@ -22,6 +22,7 @@ const slides = defineCollection({
     description: z.string().optional(),
     theme: z.string().optional(),
     draft: z.boolean().optional(),
+    unlisted: z.boolean().optional(),
   }),
 });
 
