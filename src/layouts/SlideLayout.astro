@@ -140,4 +140,24 @@ const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
     margin-top: 2.5em;
     opacity: 0.6;
   }
+
+  :global(.reveal .slides section.intro-slide .intro-body) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2em;
+    text-align: left;
+  }
+
+  :global(.reveal .slides section.intro-slide .intro-text) {
+    flex: 1;
+  }
+
+  :global(.reveal .slides section.intro-slide .intro-photo) {
+    flex-shrink: 0;
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
 </style>
