@@ -120,4 +120,24 @@ const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
     position: absolute;
     inset: 0;
   }
+
+  :global(.reveal .slides section.title-slide) {
+    text-align: center;
+  }
+
+  :global(.reveal .slides section.title-slide h1) {
+    font-size: 2em;
+  }
+
+  :global(.reveal .slides section.title-slide .subtitle) {
+    font-size: 0.6em;
+    margin-top: 0.8em;
+    opacity: 0.75;
+  }
+
+  :global(.reveal .slides section.title-slide .author) {
+    font-size: 0.4em;
+    margin-top: 2.5em;
+    opacity: 0.6;
+  }
 </style>
