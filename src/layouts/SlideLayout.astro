@@ -159,5 +159,62 @@ const themeHref = theme === "white" ? whiteThemeHref : blackThemeHref;
     height: 220px;
     object-fit: cover;
     border-radius: 50%;
+    margin: 0;
+  }
+
+  :global(.reveal .slides section.split-slide .split-body) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2em;
+    text-align: left;
+  }
+
+  :global(.reveal .slides section.split-slide .split-text) {
+    flex: 1;
+    font-size: 0.8em;
+  }
+
+  :global(.reveal .slides section.split-slide .split-image) {
+    flex-shrink: 0;
+    width: 320px;
+    max-width: 320px;
+    max-height: 400px;
+    height: auto;
+    object-fit: contain;
+    margin: 0;
+  }
+
+  :global(.reveal .slides section.big-slide .big-body) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6em;
+    text-align: left;
+  }
+
+  :global(.reveal .slides section.big-slide .big-text) {
+    align-self: flex-start;
+  }
+
+  :global(.reveal .slides section.big-slide .big-image) {
+    width: auto;
+    height: auto;
+    max-width: 880px;
+    max-height: 460px;
+    object-fit: contain;
+    margin: 20px auto 0;
+    display: block;
+  }
+
+  :global(.reveal .slides section img) {
+    border: none;
+    background: none;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+    max-width: 90%;
+    max-height: 320px;
+    object-fit: contain;
+    margin: 15px auto;
   }
 </style>
