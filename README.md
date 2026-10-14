@@ -1,3 +1,1 @@
-# iam
-
-[Morita](https://morit958.com)
+iam [Morita](https://morit958.com).
