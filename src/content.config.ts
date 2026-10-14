@@ -14,16 +14,4 @@ const posts = defineCollection({
   }),
 });
 
-const slides = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/talks" }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    description: z.string().optional(),
-    theme: z.string().optional(),
-    draft: z.boolean().optional(),
-    unlisted: z.boolean().optional(),
-  }),
-});
-
-export const collections = { posts, slides };
+export const collections = { posts };
