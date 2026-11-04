@@ -8,3 +8,6 @@ bin/
 .idea/
 
 TODO.md
+
+# Local SQLite database
+data/

@@ -58,6 +58,24 @@ const { page } = Astro.props;
               )}
               <div class="post-meta">
                 <span>{post.data.date.toISOString().slice(0, 10)}</span>
+                {!post.data.url && (
+                  <span class="like-badge" data-like-count={post.id} hidden>
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="12"
+                      height="12"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    <span class="like-badge-count" />
+                  </span>
+                )}
               </div>
               <h3 class="post-title">
                 {post.data.title}
@@ -113,6 +131,28 @@ const { page } = Astro.props;
     <Footer />
   </main>
 </Layout>
+
+<script>
+  // Fill in the like counts. If the API is unreachable the badges stay hidden.
+  const badges = document.querySelectorAll<HTMLElement>("[data-like-count]");
+  if (badges.length > 0) {
+    fetch("/api/likes")
+      .then((res) => {
+        if (!res.ok) throw new Error(`likes API responded ${res.status}`);
+        return res.json() as Promise<{ counts: Record<string, number> }>;
+      })
+      .then(({ counts }) => {
+        badges.forEach((badge) => {
+          const n = counts[badge.dataset.likeCount ?? ""];
+          if (n === undefined) return;
+          const countEl = badge.querySelector(".like-badge-count");
+          if (countEl) countEl.textContent = String(n);
+          badge.hidden = false;
+        });
+      })
+      .catch(() => {});
+  }
+</script>
 
 <style>
   .page {
@@ -230,6 +270,16 @@ const { page } = Astro.props;
     gap: 12px;
     color: var(--muted);
     font-size: 12px;
+  }
+
+  .like-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .like-badge[hidden] {
+    display: none;
   }
 
   .post-title {

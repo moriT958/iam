@@ -6,17 +6,32 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/moriT958/iam/internal/like"
 )
 
 var zeroTime time.Time
 
-// New returns the application handler. site is the built Astro site.
-func New(site fs.FS, logger *slog.Logger) http.Handler {
+// Config holds the dependencies of the application handler.
+type Config struct {
+	// Site is the built Astro site (web/dist).
+	Site fs.FS
+	// Likes serves /api/likes. Optional: the API is not mounted when nil.
+	Likes *like.Handler
+	// Logger receives access logs and errors.
+	Logger *slog.Logger
+}
+
+// New returns the application handler.
+func New(cfg Config) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", healthz)
-	mux.Handle("/", newStaticHandler(site))
+	if cfg.Likes != nil {
+		cfg.Likes.Register(mux)
+	}
+	mux.Handle("/", newStaticHandler(cfg.Site))
 
-	return recoverer(logger, accessLog(logger, mux))
+	return recoverer(cfg.Logger, accessLog(cfg.Logger, mux))
 }
 
 func healthz(w http.ResponseWriter, _ *http.Request) {

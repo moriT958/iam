@@ -36,7 +36,13 @@ func accessLog(logger *slog.Logger, next http.Handler) http.Handler {
 		start := time.Now()
 		rec := &statusRecorder{ResponseWriter: w}
 		next.ServeHTTP(rec, r)
-		logger.Info("request",
+		// Client errors (e.g. bots probing for /wp-login.php) are routine on a
+		// public site, so only server errors are raised above INFO.
+		level := slog.LevelInfo
+		if rec.status >= http.StatusInternalServerError {
+			level = slog.LevelError
+		}
+		logger.Log(r.Context(), level, "request",
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),
 			slog.Int("status", rec.status),

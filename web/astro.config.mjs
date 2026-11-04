@@ -43,6 +43,13 @@ export default defineConfig({
     }),
   },
   vite: {
+    // `astro dev` has no like API of its own; forward it to the Go server
+    // (`mise run app:run`).
+    server: {
+      proxy: {
+        "/api": process.env.IAM_API_URL ?? "http://localhost:8080",
+      },
+    },
     // Vite 8's default CSS minifier (Lightning CSS) drops the unprefixed
     // `backdrop-filter` declaration when no browser targets are configured,
     // keeping only `-webkit-backdrop-filter`. Pin back to esbuild so both

@@ -1,3 +1,5 @@
+// Command iam serves the personal website (a statically built Astro site) and
+// its like API as a single binary.
 package main
 
 import (
@@ -7,9 +9,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
+	"golang.org/x/time/rate"
+
+	"github.com/moriT958/iam/internal/like"
 	"github.com/moriT958/iam/internal/server"
 	"github.com/moriT958/iam/web"
 )
@@ -28,10 +34,30 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 
+	slugs, err := like.LoadSlugs(site, "posts.json")
+	if err != nil {
+		return err
+	}
+
+	dbPath := filepath.Join(getenv("IAM_DATA_DIR", "data"), "iam.db")
+	store, err := like.OpenSQLite(dbPath)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = store.Close() }()
+	logger.Info("database ready", slog.String("path", dbPath), slog.Int("posts", len(slugs)))
+
+	// 10 likes at once per visitor, then one every 3 seconds.
+	limiter := like.NewLimiter(rate.Every(3*time.Second), 10)
+
 	addr := ":" + getenv("PORT", "8080")
 	srv := &http.Server{
-		Addr:              addr,
-		Handler:           server.New(site, logger),
+		Addr: addr,
+		Handler: server.New(server.Config{
+			Site:   site,
+			Likes:  like.NewHandler(store, slugs, limiter, logger),
+			Logger: logger,
+		}),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      30 * time.Second,

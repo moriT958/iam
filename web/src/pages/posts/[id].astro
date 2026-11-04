@@ -6,6 +6,7 @@ import Footer from "../../components/Footer.astro";
 import PostHeader from "../../components/PostHeader.astro";
 import Prose from "../../components/Prose.astro";
 import PostNav from "../../components/PostNav.astro";
+import LikeButton from "../../components/LikeButton.astro";
 import TableOfContents from "../../components/TableOfContents.astro";
 
 export async function getStaticPaths() {
@@ -46,6 +47,7 @@ const hasToc = tocItems.length > 0;
         <Prose>
           <Content />
         </Prose>
+        <LikeButton slug={post.id} />
         <PostNav prevPost={prevPost} nextPost={nextPost} />
       </article>
       {

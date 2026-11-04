@@ -20,7 +20,7 @@ func newTestServer() http.Handler {
 		"favicon.svg":           {Data: []byte("<svg/>")},
 		"rss.xml":               {Data: []byte("<rss/>")},
 	}
-	return New(site, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	return New(Config{Site: site, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))})
 }
 
 func do(t *testing.T, h http.Handler, method, target string, hdr map[string]string) *httptest.ResponseRecorder {
@@ -70,7 +70,7 @@ func TestNotFound(t *testing.T) {
 
 func TestCustom404Page(t *testing.T) {
 	site := fstest.MapFS{"404.html": {Data: []byte("<h1>not found</h1>")}}
-	h := New(site, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	h := New(Config{Site: site, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))})
 	rec := do(t, h, http.MethodGet, "/missing", nil)
 	if rec.Code != http.StatusNotFound {
 		t.Fatalf("status = %d, want 404", rec.Code)
@@ -174,5 +174,42 @@ func TestHealthz(t *testing.T) {
 	}
 	if got := rec.Header().Get("Cache-Control"); got != "no-store" {
 		t.Fatalf("Cache-Control = %q, want no-store", got)
+	}
+}
+
+func TestAccessLogLevel(t *testing.T) {
+	tests := []struct {
+		status int
+		level  string
+	}{
+		{http.StatusOK, "INFO"},
+		{http.StatusNotModified, "INFO"},
+		{http.StatusNotFound, "INFO"},
+		{http.StatusTooManyRequests, "INFO"},
+		{http.StatusInternalServerError, "ERROR"},
+		{http.StatusBadGateway, "ERROR"},
+	}
+	for _, tt := range tests {
+		t.Run(http.StatusText(tt.status), func(t *testing.T) {
+			var buf strings.Builder
+			logger := slog.New(slog.NewJSONHandler(&buf, nil))
+			h := accessLog(logger, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.WriteHeader(tt.status)
+			}))
+			do(t, h, http.MethodGet, "/x", nil)
+			if want := `"level":"` + tt.level + `"`; !strings.Contains(buf.String(), want) {
+				t.Fatalf("log = %s; want %s", buf.String(), want)
+			}
+		})
+	}
+}
+
+func TestAccessLogSkipsHealthz(t *testing.T) {
+	var buf strings.Builder
+	logger := slog.New(slog.NewJSONHandler(&buf, nil))
+	h := accessLog(logger, http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	do(t, h, http.MethodGet, "/healthz", nil)
+	if buf.Len() != 0 {
+		t.Fatalf("healthz was logged: %s", buf.String())
 	}
 }

@@ -1,0 +1,174 @@
+---
+type Props = {
+  slug: string;
+};
+
+const { slug } = Astro.props;
+---
+
+<div class="like">
+  <button
+    type="button"
+    class="like-btn"
+    data-like-slug={slug}
+    aria-pressed="false"
+    aria-label="いいね"
+    disabled
+  >
+    <svg
+      class="like-icon"
+      viewBox="0 0 24 24"
+      width="15"
+      height="15"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path
+        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+      ></path>
+    </svg>
+    <span class="like-count" aria-live="polite">-</span>
+  </button>
+</div>
+
+<script>
+  const STORAGE_PREFIX = "like:";
+
+  // localStorage can throw (private mode, blocked site data), so every access is guarded.
+  function readLiked(slug: string): boolean {
+    try {
+      return localStorage.getItem(STORAGE_PREFIX + slug) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function writeLiked(slug: string, liked: boolean) {
+    try {
+      if (liked) localStorage.setItem(STORAGE_PREFIX + slug, "1");
+      else localStorage.removeItem(STORAGE_PREFIX + slug);
+    } catch {
+      // The button still works for this visit; it just will not be remembered.
+    }
+  }
+
+  async function request(slug: string, method: string): Promise<number> {
+    const res = await fetch(`/api/likes/${encodeURIComponent(slug)}`, {
+      method,
+    });
+    if (!res.ok) throw new Error(`likes API responded ${res.status}`);
+    const body = (await res.json()) as { count: number };
+    return body.count;
+  }
+
+  function init(btn: HTMLButtonElement) {
+    const slug = btn.dataset.likeSlug;
+    const countEl = btn.querySelector<HTMLElement>(".like-count");
+    if (!slug || !countEl) return;
+
+    let count: number | null = null;
+    let liked = readLiked(slug);
+    let pending = false;
+
+    const render = () => {
+      countEl.textContent = count === null ? "-" : String(count);
+      btn.classList.toggle("liked", liked);
+      btn.setAttribute("aria-pressed", String(liked));
+      btn.disabled = count === null || pending;
+    };
+
+    render();
+
+    // If the API is unreachable the button simply stays disabled.
+    request(slug, "GET")
+      .then((n) => {
+        count = n;
+        render();
+      })
+      .catch(() => {});
+
+    btn.addEventListener("click", async () => {
+      if (count === null || pending) return;
+
+      const prev = { count, liked };
+      liked = !liked;
+      count = Math.max(0, count + (liked ? 1 : -1));
+      pending = true;
+      render();
+
+      try {
+        count = await request(slug, liked ? "POST" : "DELETE");
+        writeLiked(slug, liked);
+      } catch {
+        ({ count, liked } = prev);
+      } finally {
+        pending = false;
+        render();
+      }
+    });
+  }
+
+  document
+    .querySelectorAll<HTMLButtonElement>(".like-btn")
+    .forEach((btn) => init(btn));
+</script>
+
+<style>
+  .like {
+    margin-top: 36px;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      color 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+  }
+
+  .like-btn:not(:disabled):hover {
+    color: var(--fg);
+    border-color: var(--border-strong);
+  }
+
+  .like-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .like-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  .like-btn.liked {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: var(--accent-border);
+  }
+
+  .like-btn.liked .like-icon {
+    fill: currentColor;
+  }
+
+  .like-count {
+    min-width: 1ch;
+    text-align: left;
+  }
+</style>
