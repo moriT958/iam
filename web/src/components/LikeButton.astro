@@ -37,11 +37,12 @@ const { slug } = Astro.props;
   const STORAGE_PREFIX = "like:";
 
   // localStorage can throw (private mode, blocked site data), so every access is guarded.
-  function readLiked(slug: string): boolean {
+  // Returns null when the stored state cannot be read.
+  function readLiked(slug: string): boolean | null {
     try {
       return localStorage.getItem(STORAGE_PREFIX + slug) === "1";
     } catch {
-      return false;
+      return null;
     }
   }
 
@@ -69,7 +70,7 @@ const { slug } = Astro.props;
     if (!slug || !countEl) return;
 
     let count: number | null = null;
-    let liked = readLiked(slug);
+    let liked = readLiked(slug) ?? false;
     let pending = false;
 
     const render = () => {
@@ -81,28 +82,46 @@ const { slug } = Astro.props;
 
     render();
 
-    // If the API is unreachable the button simply stays disabled.
-    request(slug, "GET")
-      .then((n) => {
-        count = n;
-        render();
-      })
-      .catch(() => {});
+    const refreshCount = () =>
+      request(slug, "GET")
+        .then((n) => {
+          count = n;
+          render();
+        })
+        // If the API is unreachable the button simply stays disabled.
+        .catch(() => {});
+
+    refreshCount();
+
+    // Another tab liked or un-liked this post: follow it, so this tab cannot
+    // like the same post a second time.
+    window.addEventListener("storage", (e) => {
+      if (e.key !== STORAGE_PREFIX + slug || pending) return;
+      liked = e.newValue === "1";
+      render();
+      refreshCount();
+    });
 
     btn.addEventListener("click", async () => {
       if (count === null || pending) return;
+
+      // The stored state is shared by every tab; trust it over this tab's memory.
+      liked = readLiked(slug) ?? liked;
 
       const prev = { count, liked };
       liked = !liked;
       count = Math.max(0, count + (liked ? 1 : -1));
       pending = true;
+      // Write before the request, not after, so a second tab clicking while this
+      // one is still waiting for the server already sees the new state.
+      writeLiked(slug, liked);
       render();
 
       try {
         count = await request(slug, liked ? "POST" : "DELETE");
-        writeLiked(slug, liked);
       } catch {
         ({ count, liked } = prev);
+        writeLiked(slug, liked);
       } finally {
         pending = false;
         render();
