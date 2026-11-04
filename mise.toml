@@ -1,0 +1,129 @@
+[tools]
+node = "22"
+pnpm = "10"
+go = "1.27"
+
+# ========================================
+# Web (Astro)
+# ========================================
+[tasks."web:install"]
+description = "Install frontend dependencies"
+dir = "web"
+run = "pnpm install --frozen-lockfile"
+sources = ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "packages/*/package.json"]
+outputs = ["node_modules/.modules.yaml"]
+
+[tasks."web:dev"]
+description = "Start the Astro dev server (http://localhost:4321)"
+depends = ["web:install"]
+dir = "web"
+run = "pnpm dev"
+
+[tasks."web:build"]
+description = "Build the Astro site into web/dist (embedded into the Go binary)"
+depends = ["web:install"]
+dir = "web"
+run = "pnpm build"
+sources = ["src/**/*", "public/**/*", "packages/**/*", "astro.config.mjs", "tsconfig.json", "package.json"]
+outputs = ["dist/index.html"]
+
+[tasks."web:fmt"]
+description = "Format the frontend with prettier"
+depends = ["web:install"]
+dir = "web"
+run = "pnpm fmt"
+
+[tasks."web:fmt:check"]
+description = "Check frontend formatting"
+depends = ["web:install"]
+dir = "web"
+run = "pnpm fmt:check"
+
+[tasks."web:lint"]
+description = "Lint the frontend with eslint"
+depends = ["web:install"]
+dir = "web"
+run = "pnpm lint"
+
+[tasks."web:check"]
+description = "Type-check the frontend with astro check"
+depends = ["web:install"]
+dir = "web"
+run = "pnpm check"
+
+# ========================================
+# App (Go)
+# ========================================
+
+[tasks."app:run"]
+description = "Run the Go app server alone (needs web/dist; see `start` to build it first)"
+run = '''
+if [ ! -f web/dist/index.html ]; then
+  echo "web/dist is missing. Run 'mise run web:build' first, or use 'mise run start'." >&2
+  exit 1
+fi
+exec go run ./cmd/iam
+'''
+
+[tasks."app:fmt"]
+description = "Format Go code with gofmt"
+run = "gofmt -w cmd internal web/embed.go"
+
+[tasks."app:fmt:check"]
+description = "Check Go formatting"
+run = '''
+out="$(gofmt -l cmd internal web/embed.go)"
+if [ -n "$out" ]; then
+  echo "gofmt needed:" >&2
+  echo "$out" >&2
+  exit 1
+fi
+'''
+
+[tasks."app:vet"]
+description = "Run go vet"
+depends = ["web:build"]
+run = "go vet ./..."
+
+[tasks."app:test"]
+description = "Run Go tests"
+depends = ["web:build"]
+run = "go test ./..."
+
+# ========================================
+# All
+# ========================================
+[tasks.start]
+description = "Build the web, then start the app server (one shot)"
+depends = ["web:build"]
+run = "go run ./cmd/iam"
+
+[tasks.build]
+description = "Build the single binary into bin/iam"
+depends = ["web:build"]
+env = { CGO_ENABLED = "0" }
+run = "go build -trimpath -ldflags '-s -w' -o bin/iam ./cmd/iam"
+
+[tasks.fmt]
+description = "Format everything"
+depends = ["web:fmt", "app:fmt"]
+
+[tasks.ci]
+description = "Run every check that CI runs"
+run = [
+  { task = "web:fmt:check" },
+  { task = "web:lint" },
+  { task = "web:check" },
+  { task = "app:fmt:check" },
+  { task = "app:vet" },
+  { task = "app:test" },
+  { task = "build" },
+]
+
+[tasks."docker:build"]
+description = "Build the container image"
+run = "docker build -t iam:dev ."
+
+[tasks.clean]
+description = "Remove build artifacts"
+run = "rm -rf web/dist web/.astro bin"
