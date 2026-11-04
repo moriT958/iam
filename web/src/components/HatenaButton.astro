@@ -1,0 +1,35 @@
+---
+type Props = {
+  /** Canonical URL of the page, as in <link rel="canonical">. */
+  url: string;
+};
+
+const { url } = Astro.props;
+
+// Hatena's entry URL drops the scheme and marks https with "s/". Pinning it to the
+// canonical URL keeps /posts/x and /posts/x/ from being counted as different pages.
+const u = new URL(url);
+const entryUrl = `https://b.hatena.ne.jp/entry/${u.protocol === "https:" ? "s/" : ""}${u.host}${u.pathname}${u.search}`;
+---
+
+<a
+  href={entryUrl}
+  class="hatena-bookmark-button"
+  data-hatena-bookmark-layout="touch"
+  data-hatena-bookmark-width="32"
+  data-hatena-bookmark-height="32"
+  title="このエントリーをはてなブックマークに追加"
+>
+  <img
+    src="https://b.st-hatena.com/images/v4/public/entry-button/button-only@2x.png"
+    alt="このエントリーをはてなブックマークに追加"
+    width="20"
+    height="20"
+    style="border: none;"
+  />
+</a>
+<script
+  is:inline
+  src="https://b.st-hatena.com/js/bookmark_button.js"
+  charset="utf-8"
+  async></script>

@@ -7,6 +7,7 @@ import PostHeader from "../../components/PostHeader.astro";
 import Prose from "../../components/Prose.astro";
 import PostNav from "../../components/PostNav.astro";
 import LikeButton from "../../components/LikeButton.astro";
+import HatenaButton from "../../components/HatenaButton.astro";
 import TableOfContents from "../../components/TableOfContents.astro";
 
 export async function getStaticPaths() {
@@ -27,6 +28,7 @@ const tocItems = headings
   .filter((h) => h.depth === 2 || h.depth === 3)
   .map((h) => ({ id: h.slug, text: h.text, depth: h.depth }));
 const hasToc = tocItems.length > 0;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <Layout
@@ -47,7 +49,10 @@ const hasToc = tocItems.length > 0;
         <Prose>
           <Content />
         </Prose>
-        <LikeButton slug={post.id} />
+        <div class="post-actions">
+          <LikeButton slug={post.id} />
+          <HatenaButton url={canonicalUrl} />
+        </div>
         <PostNav prevPost={prevPost} nextPost={nextPost} />
       </article>
       {
@@ -105,6 +110,14 @@ const hasToc = tocItems.length > 0;
 
   .toc-aside {
     padding-top: 28px;
+  }
+
+  .post-actions {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
   }
 
   @media (max-width: 1080px) {
