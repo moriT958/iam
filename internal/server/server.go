@@ -31,7 +31,7 @@ func New(cfg Config) http.Handler {
 	}
 	mux.Handle("/", newStaticHandler(cfg.Site))
 
-	return recoverer(cfg.Logger, accessLog(cfg.Logger, mux))
+	return recoverer(cfg.Logger, accessLog(cfg.Logger, securityHeaders(mux)))
 }
 
 func healthz(w http.ResponseWriter, _ *http.Request) {

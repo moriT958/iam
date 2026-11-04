@@ -213,3 +213,30 @@ func TestAccessLogSkipsHealthz(t *testing.T) {
 		t.Fatalf("healthz was logged: %s", buf.String())
 	}
 }
+
+func TestSecurityHeaders(t *testing.T) {
+	h := newTestServer()
+	// Every kind of response gets them: pages, assets, 404s, 405s and /healthz.
+	paths := []struct {
+		method, path string
+	}{
+		{http.MethodGet, "/"},
+		{http.MethodGet, "/_astro/app.abc123.css"},
+		{http.MethodGet, "/missing"},
+		{http.MethodPost, "/"},
+		{http.MethodGet, "/healthz"},
+	}
+	want := map[string]string{
+		"X-Content-Type-Options": "nosniff",
+		"Referrer-Policy":        "strict-origin-when-cross-origin",
+		"X-Frame-Options":        "DENY",
+	}
+	for _, p := range paths {
+		rec := do(t, h, p.method, p.path, nil)
+		for k, v := range want {
+			if got := rec.Header().Get(k); got != v {
+				t.Errorf("%s %s: %s = %q, want %q", p.method, p.path, k, got, v)
+			}
+		}
+	}
+}

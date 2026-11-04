@@ -63,3 +63,19 @@ func recoverer(logger *slog.Logger, next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// securityHeaders adds the response headers that harden every response, API and
+// static files alike. The site has no cookies of its own to protect and embeds
+// nothing, so these are safe defaults rather than a tuned policy.
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		// Browsers must trust the Content-Type we send instead of guessing.
+		h.Set("X-Content-Type-Options", "nosniff")
+		// Do not leak full URLs of this site to other sites.
+		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		// Nobody has a reason to frame this site (clickjacking).
+		h.Set("X-Frame-Options", "DENY")
+		next.ServeHTTP(w, r)
+	})
+}
