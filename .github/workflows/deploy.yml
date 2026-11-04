@@ -1,0 +1,112 @@
+name: Deploy
+
+# Release by pushing a version tag:
+#
+#   gh release create v1.2.3 --generate-notes     (or: git tag v1.2.3 && git push origin v1.2.3)
+#
+# That runs the tests, publishes the image, and commits it to the homelab repo
+# (k8s/iam/deployment.yaml). The push reaches Argo CD through the repo's
+# webhook, so the deploy starts right away.
+#
+# To roll back, revert the "iam: deploy ..." commit in the homelab repo.
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+# One release at a time, in order.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  publish:
+    needs: tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Releases come from main only; a tag on some other branch is a mistake.
+      - name: Check the tag is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+      # v1.2.3 -> 1.2.3
+      - id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/morit958/iam
+          tags: |
+            type=semver,pattern={{version}}
+            type=sha
+
+      - uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.publish.outputs.version }}
+      DIGEST: ${{ needs.publish.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: moriT958/homelab
+          # Deploy key of moriT958/homelab with write access (just that one repository).
+          ssh-key: ${{ secrets.HOMELAB_DEPLOY_KEY }}
+          path: homelab
+
+      - name: Point the manifest at the new image and push
+        working-directory: homelab
+        run: |
+          file=k8s/iam/deployment.yaml
+
+          [ "$(grep -cE '^ *image: ghcr.io/morit958/iam:' "$file")" = 1 ]
+          sed -i -E "s|^( *image: ghcr.io/morit958/iam:).*|\1${VERSION}@${DIGEST}|" "$file"
+
+          if git diff --quiet; then
+            echo "Already at ${VERSION}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "iam: deploy ${VERSION}" \
+            -m "https://github.com/${GITHUB_REPOSITORY}/releases/tag/${GITHUB_REF_NAME}"
+
+          # Something else may have been pushed to the homelab repo in the meantime.
+          for attempt in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1

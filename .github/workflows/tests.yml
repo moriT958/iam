@@ -5,7 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Also the first step of a release (see deploy.yml).
+  workflow_call:
 
+# Nothing here needs to write to the repository, so keep the token read-only.
 permissions:
   contents: read
 
@@ -15,12 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Installs node / pnpm / go pinned in mise.toml
       - uses: jdx/mise-action@v5
 
+      # fmt:check, lint, astro check, gofmt, go vet, go test, build
       - name: CI
         run: mise run ci
 
   docker:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
