@@ -1,5 +1,5 @@
 # Build the Astro site (web/dist).
-FROM node:22-alpine AS web
+FROM node:24.22.1-alpine AS web
 WORKDIR /app/web
 
 RUN npm install -g pnpm@10
