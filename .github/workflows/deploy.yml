@@ -5,8 +5,8 @@ name: Deploy
 #   gh release create v1.2.3 --generate-notes     (or: git tag v1.2.3 && git push origin v1.2.3)
 #
 # That runs the tests, publishes the image, and commits it to the homelab repo
-# (kubernetes/apps/iam/iam/app/deployment.yaml). Flux picks up the commit on its
-# next sync (within an hour).
+# (k8s/apps/iam/iam/app/deployment.yaml). The push reaches Flux through the
+# repo's webhook, so the deploy starts right away.
 #
 # To roll back, revert the "iam: deploy ..." commit in the homelab repo.
 
@@ -89,7 +89,7 @@ jobs:
       - name: Point the manifest at the new image and push
         working-directory: homelab
         run: |
-          file=kubernetes/apps/iam/iam/app/deployment.yaml
+          file=k8s/apps/iam/iam/app/deployment.yaml
 
           [ "$(grep -cE '^ *image: ghcr.io/morit958/iam:' "$file")" = 1 ]
           sed -i -E "s|^( *image: ghcr.io/morit958/iam:).*|\1${VERSION}@${DIGEST}|" "$file"
